@@ -1,5 +1,17 @@
-package pl.coderslab;public class Main {
+package pl.coderslab;
+
+import pl.coderslab.entity.User;
+import pl.coderslab.entity.UserDao;
+
+public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+
+        UserDao userDao = new UserDao();
+        User user = new User();
+
+        user.setData("Mariusz Plaskota","mp@mp.pl","aA123456*");
+        userDao.Create(user);
+
+
     }
 }
