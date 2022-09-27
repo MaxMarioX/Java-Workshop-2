@@ -26,6 +26,11 @@ public class User {
         this.email = _password;
     }
 
+    public int getId()
+    {
+        return this.id;
+    }
+
     public String getUsername()
     {
         return this.userName;

@@ -5,11 +5,13 @@ import pl.coderslab.DbUtil;
 
 import java.nio.file.StandardOpenOption;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDao {
     private static final String CREATE_USER_QUERY = "INSERT INTO users(email, username, password) VALUES(?, ?, ?)";
     private static final String READ_USER_QUERY = "SELECT * from users where id = ?";
-    private static final String UPDATE_USER_QUERY = "UPDATE users SET email = ?, username = ?, password = ?";
+    private static final String UPDATE_USER_QUERY = "UPDATE users SET email = ?, username = ?, password = ? where id=?";
     private static final String DELETE_USER_QUERY = "DELETE FROM users where id = ?";
     private static final String FIND_ALL_USERS_QUERY = "SELECT * from users";
 
@@ -62,5 +64,48 @@ public class UserDao {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    public void Update(User user)
+    {
+        try(Connection conn = DbUtil.getConnection())
+        {
+            PreparedStatement statement = conn.prepareStatement(UPDATE_USER_QUERY);
+            statement.setString(1, user.getEmail());
+            statement.setString(2, user.getUsername());
+            statement.setString(3, hashPassword(user.getPassword()));
+            statement.setInt(4, user.getId());
+            statement.executeUpdate();
+        }
+        catch(SQLException e)
+        {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public List<User> finalAll()
+    {
+        try(Connection conn = DbUtil.getConnection())
+        {
+            List<User> users = new ArrayList<User>();
+
+            PreparedStatement statement = conn.prepareStatement(FIND_ALL_USERS_QUERY);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next())
+            {
+                User user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setUserName(resultSet.getString("username"));
+                user.setEmail(resultSet.getString("email"));
+                user.setPassword(resultSet.getString("password"));
+                users.add(user);
+            }
+            return users;
+
+        } catch(SQLException e)
+        {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 }
